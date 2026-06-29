@@ -39,7 +39,7 @@ const Layout = ({ children }) => {
   // Helper to construct avatar path
   const getAvatarUrl = () => {
     if (user?.avatar) {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5050/api';
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
       return `${baseUrl.replace('/api', '')}/uploads/${user.avatar}`;
     }
     // Fallback to initial avatar generator

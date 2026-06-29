@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5050/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -42,7 +42,7 @@ api.interceptors.response.use(
         }
 
         // Invoke refresh using direct axios instance to prevent loop
-        const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5050/api';
+        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
         const refreshResponse = await axios.post(`${baseURL}/auth/refresh`, {
           refreshToken
         });

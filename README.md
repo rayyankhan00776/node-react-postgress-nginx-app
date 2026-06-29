@@ -95,6 +95,38 @@ Vite will launch the hot-reloading server on `http://localhost:5173`. Open this 
 
 ---
 
+## Running with Docker Compose
+
+To spin up the entire production-style stack inside isolated Docker containers:
+
+1. **Configure Docker Compose**:
+   Copy the example docker-compose file to the active configuration:
+   ```bash
+   cp docker-compose.yml.example docker-compose.yml
+   ```
+2. **Build and Start Containers**:
+   Build the frontend/backend images and start all services (database, backend API, and frontend Nginx server):
+   ```bash
+   docker compose up -d
+   ```
+   *The database container (`taskflow_db`) starts and performs a health check, followed by the backend server (`taskflow_backend` on port `5050`) and the Nginx frontend reverse proxy (`taskflow_frontend` on port `8080`).*
+
+3. **Seed the Container Database**:
+   Execute the migration and database seeding script inside the running backend container to build the tables and populate the default users/workspaces:
+   ```bash
+   docker exec -it taskflow_backend npm run db:init
+   ```
+
+4. **Access the App**:
+   Open your browser and visit:
+   **`http://localhost:8080`**
+
+   Use the preconfigured credentials to log in:
+   - **Email**: `jane@taskflow.pro`
+   - **Password**: `Password123!`
+
+---
+
 ## REST API Documentation
 
 All request bodies must be JSON payload format. Non-public endpoints require the header `Authorization: Bearer <jwt_access_token>`.
