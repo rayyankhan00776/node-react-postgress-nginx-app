@@ -127,6 +127,75 @@ To spin up the entire production-style stack inside isolated Docker containers:
 
 ---
 
+## Running with Kubernetes
+
+You can deploy and run the entire production-style stack inside a local Kubernetes cluster (like **Kind** or **Minikube**).
+
+### Prerequisites
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
+- A running local cluster (e.g. [Kind](https://kind.sigs.k8s.io/) or [Minikube](https://minikube.sigs.k8s.io/)).
+
+### 1. Setup Namespace & ConfigMap
+Navigate to the `k8s/` directory and deploy the basic infrastructure config:
+```bash
+cd k8s
+kubectl apply -f namespace.yml
+kubectl apply -f config-map.yml
+```
+
+### 2. Deploy Database (Postgres)
+Create the persistent volume claim and deploy the database:
+```bash
+kubectl apply -f postgres-storage.yml
+kubectl apply -f postgress-dep.yml
+kubectl apply -f postgress-svc.yml
+```
+
+### 3. Deploy Backend & Seed Tables
+Deploy the backend API and run the DB migration/seeding script inside the running container:
+```bash
+kubectl apply -f backend-dep.yml
+kubectl apply -f backend-svc.yml
+
+# Wait for the backend pod to be in "Running" status, then seed:
+kubectl exec -it deployment/backend-deployment -n taskpro-ns -- npm run db:init
+```
+
+### 4. Deploy Frontend
+```bash
+kubectl apply -f frontend-dep.yml
+kubectl apply -f frontend-svc.yml
+```
+
+### 5. Configure Routing (Choose Option A or B)
+
+#### Option A: Native Nginx Ingress Controller (Recommended)
+If your cluster has port mapping for port `80`/`443` exposed:
+1. Install the Ingress Controller on your cluster:
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+   ```
+2. Apply the Ingress resource:
+   ```bash
+   kubectl apply -f ingress-svc.yml
+   ```
+3. Access the application directly at: **`http://localhost`**
+
+#### Option B: Standalone Nginx Proxy
+If you prefer not to run an Ingress Controller:
+1. Deploy the Nginx proxy pod and its service:
+   ```bash
+   kubectl apply -f nginx-dep.yml
+   kubectl apply -f nginx-svc.yml
+   ```
+2. Port-forward the service to your host:
+   ```bash
+   kubectl port-forward service/nginx-service -n taskpro-ns 8080:80
+   ```
+3. Access the application at: **`http://localhost:8080`**
+
+---
+
 ## REST API Documentation
 
 All request bodies must be JSON payload format. Non-public endpoints require the header `Authorization: Bearer <jwt_access_token>`.
