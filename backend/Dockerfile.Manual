@@ -1,0 +1,34 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+FROM node:20-alpine
+
+# Create a non-root user (Alpine syntax)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copy dependencies
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy application source
+COPY . .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+# Run as non-root
+USER appuser
+
+ENV IMAGE_TYPE="Multi + Hardened + Non-root (Alpine)"
+
+EXPOSE 5050
+
+CMD ["npm", "start"]

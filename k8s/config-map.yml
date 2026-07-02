@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: taskpro-ns
+
+data:
+  PORT: "5050"
+  NODE_ENV: "development"
+  DATABASE_URL: "postgresql://postgres:password@postgres-service:5432/taskflow_pro"
+  JWT_SECRET: "some_super_secret_access_key_123456!"
+  JWT_REFRESH_SECRET: "some_super_secret_refresh_key_123456!"
+  JWT_EXPIRES_IN: "15m"
+  JWT_REFRESH_EXPIRES_IN: "7d"
+  CORS_ORIGIN: "http://localhost:5173"
+  UPLOAD_PATH: "src/uploads"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: taskpro-ns
+
+data:
+  VITE_API_BASE_URL: "/api"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgress-config
+  namespace: taskpro-ns
+data:
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin
+  POSTGRES_DB: mydatabase

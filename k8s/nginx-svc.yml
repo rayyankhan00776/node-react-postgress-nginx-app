@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: taskpro-ns
+spec:
+  type: NodePort # Or LoadBalancer if your cluster supports it (e.g. metalLB / cloud provider)
+  selector:
+    app: nginx-proxy
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30080 # Exposes the proxy on port 30080 on your cluster nodes

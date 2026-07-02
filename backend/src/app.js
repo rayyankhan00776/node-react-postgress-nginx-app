@@ -48,6 +48,13 @@ app.use('/api', globalLimiter);
 // Mount main routing index
 app.use('/api', routes);
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to the TaskPro!'
+  });
+});
+
 // Handle 404 errors for undefined endpoints
 app.use((req, res, next) => {
   next(new NotFoundError(`Can't find ${req.originalUrl} on this server.`));
